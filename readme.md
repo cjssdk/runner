@@ -16,6 +16,12 @@ Set of methods to synchronize asynchronous operations.
 npm install cjs-runner
 ```
 
+For test execution there are some additional dependencies:
+
+```bash
+sudo npm install -g mocha should
+```
+
 
 ## Usage ##
 
