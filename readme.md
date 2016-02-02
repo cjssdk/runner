@@ -22,7 +22,27 @@ npm install cjs-runner
 Add to the scope:
 
 ```js
-var runner = require('cjs-runner');
+var Runner = require('cjs-runner'),
+    runner = new Runner();
+```
+
+Create a simple task:
+
+```js
+runner.task('make', function () {
+    // some actions
+});
+```
+
+```js
+t1 = runner.task('static', runner.serial('jade:build', 'sass:build'));
+
+t1 = runner.task({
+    name: 'static',
+    dependency: ['jade:build', 'sass:build']
+});
+
+runner.start(['build']);
 ```
 
 
