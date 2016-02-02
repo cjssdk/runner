@@ -1,0 +1,24 @@
+{
+    "name": "cjs-runner",
+    "version": "1.0.0",
+    "description": "Task runner.",
+    "author": {
+        "name": "Stanislav Kalashnik",
+        "email": "darkpark.main@gmail.com"
+    },
+    "repository": "cjssdk/runner",
+    "scripts": {
+        "lint": "eslint ./*.js",
+        "test": "node ./tests/main.js",
+        "jsdoc": "jsdoc --destination doc *.js readme.md"
+    },
+    "keywords": [
+        "commonjs",
+        "sdk",
+        "cjssdk",
+        "framework",
+        "task",
+        "runner"
+    ],
+    "license": "GPL-3.0"
+}
