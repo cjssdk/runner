@@ -12,6 +12,10 @@
         "test": "node ./tests/main.js",
         "jsdoc": "jsdoc --destination doc *.js readme.md"
     },
+    "dependencies": {
+        "cjs-async": "1.*.*",
+        "cjs-emitter": "1.*.*"
+    },
     "keywords": [
         "commonjs",
         "sdk",
