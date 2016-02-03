@@ -21,7 +21,8 @@ function Runner () {
     Emitter.call(this);
 
     this.tasks = {};
-    this.running = {};
+    this.tree  = {};
+    //this.running = {};
 }
 
 
@@ -33,46 +34,115 @@ Runner.prototype.constructor = Runner;
 /**
  * Remove all attributes from the model.
  *
- * @return {boolean} operation status
- *
  * @fires Runner#clear
  */
-Runner.prototype.task = function ( name, body ) {
-    if ( name && typeof name === 'string' && body && typeof body === 'function' ) {
-        this.tasks[name] = body;
+Runner.prototype.task = function ( id, body ) {
+    if ( id && typeof id === 'string' && body && typeof body === 'function' ) {
+        this.tasks[id] = body;
+        body.id = id;
+        //console.log(body);
     }
+};
 
-    // there are some listeners
-    //if ( this.events['clear'] ) {
-    //    // notify listeners
-    //    this.emit('clear', {data: data});
-    //}
+//function done ( instance, fn ) {
+//    // mark finished
+//    fn.running = false;
+//
+//    // there are some listeners
+//    if ( instance.events['finish'] ) {
+//        // notify listeners
+//        instance.emit('finish', {id: fn.id});
+//        //console.log('finish', fn.id);
+//    }
+//}
+//
+//function wrap ( instance, fn ) {
+//    // is there a callback for task?
+//    if ( fn.length === 0 ) {
+//        // start task sync
+//        fn();
+//        // finish
+//        done();
+//    } else {
+//        // start task async
+//        fn(done);
+//    }
+//}
+
+
+Runner.prototype.wrap = function ( task ) {
+    var self = this,
+        time,
+        done = function () {
+            // mark finished
+            task.running = false;
+
+            time = +new Date() - time;
+            console.log('finish', task.id, time);
+
+            // there are some listeners
+            if ( self.events['finish'] ) {
+                // notify listeners
+                self.emit('finish', {id: task.id, time: time});
+            }
+        };
+
+    return function () {
+        // exist and not already executing
+        if ( task && !task.running ) {
+            // mark to prevent multiple starts
+            task.running = true;
+
+            time = +new Date();
+            console.log('start', task.id);
+            console.log(task);
+
+            // there are some listeners
+            if ( self.events['start'] ) {
+                // notify listeners
+                self.emit('start', {id: task.id});
+            }
+
+            // is there a callback for task?
+            if ( task.length === 0 ) {
+                // start task sync
+                task();
+                // finish
+                done();
+            } else {
+                //console.log(task.id);
+                // start task async
+                task(done);
+            }
+        }
+    };
 };
 
 
 Runner.prototype.parallel = function () {
     var self  = this,
-        tasks = Array.prototype.slice.call(arguments);
+        tasks = Array.prototype.slice.call(arguments),
+        func;
 
-    tasks = tasks.map(function ( item ) {
-        var name, func;
-
-        if ( typeof item === 'string' ) {
-            name = item;
-            func = self.tasks[item];
-        } else {
-            name = item.name;
-            func = item;
-        }
-
-        return function ( done ) {
-            self.run()
-        };
+    // get actual task functions instead of names
+    tasks = tasks.map(function ( task ) {
+        return self.tasks[task] || task;
     });
 
-    return function ( done ) {
-        parallel(tasks, done);
+    func = function ( done ) {
+        parallel(tasks.map(function ( task ) {
+            return self.wrap(task);
+        }), function () {
+            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+            done();
+        });
     };
+
+    func.group = true;
+    func.type = 'parallel';
+    func.children = tasks;
+
+    return func;
 };
 
 
@@ -94,43 +164,63 @@ Runner.prototype.serial = function () {
 };
 
 
-Runner.prototype.run = function ( name ) {
-    var self = this,
-        done = function () {
-            // mark finished
-            self.running[name] = false;
+/**
+ * @param {function|string} task task to run
+ */
+Runner.prototype.run = function ( task ) {
+    this.wrap(this.tasks[task] || task)();
 
-            // there are some listeners
-            if ( self.events['finish'] ) {
-                // notify listeners
-                self.emit('finish', {task: name});
-                console.log('finish', name);
-            }
-        };
+    //var self = this,
+    //    taskId, taskFn,
+    //    done = function () {
+    //        // mark finished
+    //        taskFn.running = false;
+	//
+    //        // there are some listeners
+    //        if ( self.events['finish'] ) {
+    //            // notify listeners
+    //            self.emit('finish', {id: taskId});
+    //            console.log('finish', taskId);
+    //        }
+    //    };
+	//
+    //// normalize
+    //if ( typeof task === 'string' ) {
+    //    taskId = task;
+    //    taskFn = self.tasks[taskId];
+    //} else {
+    //    taskId = task.id || 'noname';
+    //    taskFn = task;
+    //}
+	//
+    //// exist and not already executing
+    //if ( taskFn && !taskFn.running ) {
+    //    // mark to prevent multiple starts
+    //    taskFn.running = true;
+	//
+    //    // there are some listeners
+    //    if ( this.events['start'] ) {
+    //        // notify listeners
+    //        this.emit('start', {id: taskId});
+    //        console.log('start', taskId);
+    //    }
+	//
+    //    // is there a callback for task?
+    //    if ( taskFn.length === 0 ) {
+    //        // start task sync
+    //        taskFn();
+    //        // finish
+    //        done();
+    //    } else {
+    //        // start task async
+    //        taskFn(done);
+    //    }
+    //}
+};
 
-    // exist and not already executing
-    if ( this.tasks[name] && !this.running[name] ) {
-        // mark to prevent multiple starts
-        this.running[name] = true;
 
-        // there are some listeners
-        if ( this.events['start'] ) {
-            // notify listeners
-            this.emit('start', {task: name});
-            console.log('start', name);
-        }
-
-        // is there a callback for task?
-        if ( this.tasks[name].length === 0 ) {
-            // start task sync
-            this.tasks[name]();
-            // finish
-            done();
-        } else {
-            // start task async
-            this.tasks[name](done);
-        }
-    }
+Runner.prototype.start = function () {
+    this.run(this.tasks.default);
 };
 
 
