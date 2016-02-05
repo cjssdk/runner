@@ -42,6 +42,8 @@ Runner.prototype.task = function ( id, body ) {
         body.id = id;
         //console.log(body);
     }
+
+    return body;
 };
 
 //function done ( instance, fn ) {
@@ -72,8 +74,10 @@ Runner.prototype.task = function ( id, body ) {
 
 Runner.prototype.wrap = function ( task ) {
     var self = this,
-        time,
-        done = function () {
+        time;
+
+    return function ( cb ) {
+        var done = function () {
             // mark finished
             task.running = false;
 
@@ -85,9 +89,13 @@ Runner.prototype.wrap = function ( task ) {
                 // notify listeners
                 self.emit('finish', {id: task.id, time: time});
             }
+
+            if ( cb ) {
+                //console.log(123, cb);
+                cb(arguments);
+            }
         };
 
-    return function () {
         // exist and not already executing
         if ( task && !task.running ) {
             // mark to prevent multiple starts
@@ -95,7 +103,7 @@ Runner.prototype.wrap = function ( task ) {
 
             time = +new Date();
             console.log('start', task.id);
-            console.log(task);
+            //console.log(task);
 
             // there are some listeners
             if ( self.events['start'] ) {
@@ -126,14 +134,14 @@ Runner.prototype.parallel = function () {
 
     // get actual task functions instead of names
     tasks = tasks.map(function ( task ) {
-        return self.tasks[task] || task;
+        return self.wrap(self.tasks[task] || task);
     });
 
     func = function ( done ) {
-        parallel(tasks.map(function ( task ) {
+        parallel(/*tasks.map(function ( task ) {
             return self.wrap(task);
-        }), function () {
-            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+        })*/tasks, function () {
+            //console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
             done();
         });
     };
@@ -166,9 +174,10 @@ Runner.prototype.serial = function () {
 
 /**
  * @param {function|string} task task to run
+ * @param {function} [done] callback on task finish
  */
-Runner.prototype.run = function ( task ) {
-    this.wrap(this.tasks[task] || task)();
+Runner.prototype.run = function ( task, done ) {
+    this.wrap(this.tasks[task] || task)(done);
 
     //var self = this,
     //    taskId, taskFn,

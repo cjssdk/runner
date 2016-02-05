@@ -184,13 +184,126 @@ describe('main', function () {
     });
 
 
-    it.only('should pass: add parallel tasks', function ( done ) {
+    it('should pass: direct run sync', function () {
+        var runner  = new Runner(),
+            counter = 0,
+            handler = function () {
+                counter++;
+            };
+
+        runner.addListener('start',  handler);
+        runner.addListener('finish', handler);
+
+        runner.run(function () {
+            counter++;
+        });
+
+        counter.should.equal(3);
+    });
+
+
+    it('should pass: direct run async', function ( done ) {
+        var runner  = new Runner(),
+            counter = 0,
+            handler = function () {
+                counter++;
+            };
+
+        runner.addListener('start',  handler);
+        runner.addListener('finish', handler);
+
+        runner.run(function ( done ) {
+            setTimeout(function () {
+                handler();
+                done();
+            }, 5);
+        });
+
+        setTimeout(function () {
+            counter.should.equal(3);
+            done();
+        }, 10);
+    });
+
+
+    it('should pass: add parallel with no tasks', function () {
+        var runner  = new Runner(),
+            counter = 0,
+            handler = function () {
+                counter++;
+            };
+
+        runner.addListener('start',  handler);
+        runner.addListener('finish', handler);
+
+        runner.run(
+            runner.task('all', runner.parallel())
+        );
+
+        counter.should.equal(2);
+    });
+
+
+    it('should pass: add parallel with single sync task', function () {
+        var runner  = new Runner(),
+            counter = 0,
+            handler = function () {
+                counter++;
+            };
+
+        runner.addListener('start',  handler);
+        runner.addListener('finish', handler);
+
+        runner.run(
+            runner.task('all', runner.parallel(
+                function () {
+                    counter++;
+                }
+            ))
+        );
+
+        counter.should.equal(5);
+    });
+
+
+    it('should pass: add parallel with single async task', function ( done ) {
+        var runner  = new Runner(),
+            counter = 0,
+            handler = function () {
+                counter++;
+            };
+
+        runner.addListener('start',  handler);
+        runner.addListener('finish', handler);
+
+        runner.run(
+            runner.task('all', runner.parallel(
+                function ( cb ) {
+                    setTimeout(function () {
+                        handler();
+                        cb();
+                    }, 5);
+                }
+            )),
+            function () {
+                counter.should.equal(5);
+                done();
+            }
+        );
+    });
+
+
+    it.only('should pass: add some parallel tasks', function ( done ) {
         var runner  = new Runner(),
             counter = 0;
 
-        runner.task('t1', function ( done ) {
+        runner.task('t0', function () {
             counter++;
-            done();
+        });
+
+        runner.task('t1', function () {
+            counter++;
+            //done();
         });
 
         runner.task('t2', function ( done ) {
@@ -207,31 +320,37 @@ describe('main', function () {
             }, 10);
         });
 
-        runner.task('all', runner.parallel(
-            't1',
-            't2',
-            't3',
-            function ( done ) {
-                counter++;
+        runner.run(
+            runner.task('all', runner.parallel(
+                't0',
+                't1'
+                //'t2',
+                //'t3',
+                //function ( done ) {
+                //    counter++;
+                //    done();
+                //},
+                //function ( done ) {
+                //    setTimeout(function () {
+                //        counter++;
+                //        done();
+                //    }, 10);
+                //}
+            )),
+            function () {
+                console.log('done');
+                console.log(arguments);
                 done();
-            },
-            function ( done ) {
-                setTimeout(function () {
-                    counter++;
-                    done();
-                }, 10);
             }
-        ));
-
-        runner.run('all');
+        );
 
         setTimeout(function () {
-            counter.should.equal(2);
+            //counter.should.equal(2);
         }, 5);
 
         setTimeout(function () {
-            counter.should.equal(5);
-            done();
+            //counter.should.equal(5);
+
         }, 20);
     });
 
