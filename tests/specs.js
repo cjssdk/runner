@@ -49,13 +49,17 @@ describe('main', function () {
 
     it('should pass: run simple task sync', function () {
         var runner  = new Runner(),
-            counter = 0;
+            counter = 0,
+            result;
 
         runner.task('one', function () {
             counter++;
+            return true;
         });
 
-        runner.run('one');
+        result = runner.run('one');
+
+        result.should.equal(true);
         counter.should.equal(1);
     });
 
@@ -87,8 +91,6 @@ describe('main', function () {
         runner.run('one');
         counter.should.equal(3);
     });
-
-
 
 
     it('should pass: run simple task async with callback', function ( done ) {
@@ -126,6 +128,7 @@ describe('main', function () {
             setTimeout(function () {
                 counter++;
                 counter.should.equal(3);
+                cb();
                 done();
             }, 20);
         });
@@ -174,6 +177,7 @@ describe('main', function () {
 
         runner.task('one', function ( cb ) {
             setTimeout(function () {
+                cb();
                 done();
             }, 20);
         });
@@ -301,9 +305,9 @@ describe('main', function () {
             counter++;
         });
 
-        runner.task('t1', function () {
+        runner.task('t1', function ( done ) {
             counter++;
-            //done();
+            done();
         });
 
         runner.task('t2', function ( done ) {
@@ -321,354 +325,27 @@ describe('main', function () {
         });
 
         runner.run(
-            runner.task('all', runner.parallel(
-                't0',
-                't1'
-                //'t2',
-                //'t3',
-                //function ( done ) {
-                //    counter++;
-                //    done();
-                //},
-                //function ( done ) {
-                //    setTimeout(function () {
-                //        counter++;
-                //        done();
-                //    }, 10);
-                //}
-            )),
+            runner.task('all',
+                runner.parallel(
+                    't0',
+                    't1',
+                    't2',
+                    't3'
+                )
+            ),
             function () {
-                console.log('done');
-                console.log(arguments);
-                done();
+                //console.log(counter);
+                //console.log(arguments);
             }
         );
 
         setTimeout(function () {
-            //counter.should.equal(2);
+            counter.should.equal(2);
         }, 5);
 
         setTimeout(function () {
-            //counter.should.equal(5);
-
-        }, 20);
+            counter.should.equal(4);
+            done();
+        }, 50);
     });
-
-
-    //it('should pass: add serial tasks', function ( done ) {
-    //    var runner  = new Runner(),
-    //        counter = 0;
-	//
-    //    runner.task('t1', function () {
-    //        counter++;
-    //    });
-	//
-    //    runner.task('t2', function ( done ) {
-    //        setTimeout(function () {
-    //            counter++;
-    //            done();
-    //        }, 10);
-    //    });
-	//
-    //    runner.task('t3', function ( done ) {
-    //        setTimeout(function () {
-    //            counter++;
-    //            done();
-    //        }, 10);
-    //    });
-	//
-    //    runner.task('all', runner.serial(
-    //        't1',
-    //        't2',
-    //        't3',
-    //        function () {
-    //            counter++;
-    //        },
-    //        function ( done ) {
-    //            setTimeout(function () {
-    //                counter++;
-    //                done();
-    //            }, 10);
-    //        }
-    //    ));
-	//
-    //    runner.run('all');
-	//
-    //    setTimeout(function () {
-    //        should(counter).equal(4);
-    //    }, 25);
-	//
-    //    setTimeout(function () {
-    //        should(counter).equal(5);
-    //        done();
-    //    }, 35);
-    //});
-
-
-
-
-    //it('should pass: null tasks', function ( done ) {
-    //    parallel(null, function ( error, list, hash ) {
-    //        should.not.exist(error);
-	//
-    //        should.exist(list);
-    //        should.exist(hash);
-    //        list.should.containDeep([]);
-    //        hash.should.containDeep({});
-	//
-    //        done();
-    //    });
-    //});
-	//
-    //it('should pass: no tasks', function ( done ) {
-    //    parallel([], function ( error, list, hash ) {
-    //        should.not.exist(error);
-	//
-    //        should.exist(list);
-    //        should.exist(hash);
-    //        list.should.containDeep([]);
-    //        hash.should.containDeep({});
-	//
-    //        done();
-    //    });
-    //});
-	//
-    //it('should pass: 1 simple task', function ( done ) {
-    //    parallel([
-    //        function ( callback ) {
-    //            setTimeout(function () {
-    //                callback(null, 128);
-    //            }, 10);
-    //        }
-    //    ],
-    //    function ( error, list, hash ) {
-    //        should.not.exist(error);
-	//
-    //        should.exist(list);
-    //        should.exist(hash);
-    //        list.should.containDeep([128]);
-    //        hash.should.containDeep({});
-	//
-    //        done();
-    //    });
-    //});
-	//
-    //it('should pass: 1 named task', function ( done ) {
-    //    parallel([
-    //        function one ( callback ) {
-    //            setTimeout(function () {
-    //                callback(null, 128);
-    //            }, 10);
-    //        }
-    //    ],
-    //    function ( error, list, hash ) {
-    //        should.not.exist(error);
-	//
-    //        should.exist(list);
-    //        should.exist(hash);
-    //        list.should.containDeep([128]);
-    //        hash.should.containDeep({one: 128});
-	//
-    //        done();
-    //    });
-    //});
-	//
-    //it('should fail: 1 simple error task', function ( done ) {
-    //    parallel([
-    //        function ( callback ) {
-    //            setTimeout(function () {
-    //                callback({code: 123});
-    //            }, 10);
-    //        }
-    //    ],
-    //    function ( error, list, hash ) {
-    //        should.exist(error);
-    //        error.should.containDeep({code: 123});
-	//
-    //        should.not.exist(list);
-    //        should.not.exist(hash);
-	//
-    //        done();
-    //    });
-    //});
-	//
-    //it('should pass: 3 simple tasks', function ( done ) {
-    //    var counter = 0;
-	//
-    //    parallel([
-    //        function ( callback ) {
-    //            setTimeout(function () {
-    //                counter++;
-    //                should(counter).equal(2);
-    //                callback(null, true);
-    //            }, 10);
-    //        },
-    //        function ( callback ) {
-    //            setTimeout(function () {
-    //                counter++;
-    //                should(counter).equal(3);
-    //                callback(null, 256);
-    //            }, 20);
-    //        },
-    //        function ( callback ) {
-    //            setTimeout(function () {
-    //                counter++;
-    //                should(counter).equal(1);
-    //                callback(null, '512');
-    //            }, 0);
-    //        }
-    //    ],
-    //    function ( error, list, hash ) {
-    //        should.not.exist(error);
-	//
-    //        should.exist(list);
-    //        should.exist(hash);
-    //        list.should.containDeep([true, 256, '512']);
-    //        hash.should.containDeep({});
-	//
-    //        done();
-    //    });
-    //});
-	//
-    //it('should pass: 3 named tasks', function ( done ) {
-    //    parallel([
-    //        function t1 ( callback ) {
-    //            setTimeout(function () {
-    //                callback(null, true);
-    //            }, 10);
-    //        },
-    //        function t2 ( callback ) {
-    //            setTimeout(function () {
-    //                callback(null, 256);
-    //            }, 20);
-    //        },
-    //        function t3 ( callback ) {
-    //            setTimeout(function () {
-    //                callback(null, '512');
-    //            }, 0);
-    //        }
-    //    ],
-    //    function ( error, list, hash ) {
-    //        should.not.exist(error);
-	//
-    //        should.exist(list);
-    //        should.exist(hash);
-    //        list.should.containDeep([true, 256, '512']);
-    //        hash.should.containDeep({t1: true, t2: 256, t3: '512'});
-	//
-    //        done();
-    //    });
-    //});
-	//
-    //it('should pass: 3 mixed tasks', function ( done ) {
-    //    parallel([
-    //        function t1 ( callback ) {
-    //            setTimeout(function () {
-    //                callback(null, true);
-    //            }, 10);
-    //        },
-    //        function ( callback ) {
-    //            setTimeout(function () {
-    //                callback(null, 256);
-    //            }, 20);
-    //        },
-    //        function t3 ( callback ) {
-    //            setTimeout(function () {
-    //                callback(null, '512');
-    //            }, 0);
-    //        }
-    //    ],
-    //    function ( error, list, hash ) {
-    //        should.not.exist(error);
-	//
-    //        should.exist(list);
-    //        should.exist(hash);
-    //        list.should.containDeep([true, 256, '512']);
-    //        hash.should.containDeep({t1: true, t3: '512'});
-	//
-    //        done();
-    //    });
-    //});
-	//
-    //it('should fail: 3 simple tasks with first failed', function ( done ) {
-    //    parallel([
-    //        function ( callback ) {
-    //            setTimeout(function () {
-    //                callback(null, true);
-    //            }, 10);
-    //        },
-    //        function ( callback ) {
-    //            setTimeout(function () {
-    //                callback(null, 256);
-    //            }, 20);
-    //        },
-    //        function ( callback ) {
-    //            setTimeout(function () {
-    //                callback(true);
-    //            }, 0);
-    //        }
-    //    ],
-    //    function ( error, list, hash ) {
-    //        should.exist(error);
-    //        error.should.equal(true);
-	//
-    //        should.not.exist(list);
-    //        should.not.exist(hash);
-	//
-    //        done();
-    //    });
-    //});
-	//
-    //it('should pass: 3 simple tasks with last failed', function ( done ) {
-    //    parallel([
-    //        function ( callback ) {
-    //            setTimeout(function () {
-    //                callback(null, true);
-    //            }, 10);
-    //        },
-    //        function ( callback ) {
-    //            setTimeout(function () {
-    //                callback(123);
-    //            }, 20);
-    //        },
-    //        function ( callback ) {
-    //            setTimeout(function () {
-    //                callback(null, '512');
-    //            }, 0);
-    //        }
-    //    ],
-    //    function ( error, list, hash ) {
-    //        should.exist(error);
-    //        error.should.containDeep(123);
-	//
-    //        should.not.exist(list);
-    //        should.not.exist(hash);
-	//
-    //        done();
-    //    });
-    //});
-	//
-    //it('should pass: 3 simple tasks with all failed', function ( done ) {
-    //    parallel([
-    //        function ( callback ) {
-    //            callback(1);
-    //        },
-    //        function ( callback ) {
-    //            callback(2);
-    //        },
-    //        function ( callback ) {
-    //            callback(3);
-    //        }
-    //    ],
-    //    function ( error, list, hash ) {
-    //        should.exist(error);
-    //        error.should.equal(1);
-	//
-    //        should.not.exist(list);
-    //        should.not.exist(hash);
-	//
-    //        done();
-    //    });
-    //});
-
 });

@@ -78,23 +78,24 @@ Runner.prototype.wrap = function ( task ) {
 
     return function ( cb ) {
         var done = function () {
-            // mark finished
-            task.running = false;
+                // mark finished
+                task.running = false;
 
-            time = +new Date() - time;
-            console.log('finish', task.id, time);
+                time = +new Date() - time;
+                console.log('finish', task.id, time);
 
-            // there are some listeners
-            if ( self.events['finish'] ) {
-                // notify listeners
-                self.emit('finish', {id: task.id, time: time});
-            }
+                // there are some listeners
+                if ( self.events['finish'] ) {
+                    // notify listeners
+                    self.emit('finish', {id: task.id, time: time});
+                }
 
-            if ( cb ) {
-                //console.log(123, cb);
-                cb(arguments);
-            }
-        };
+                // callback from user or
+                if ( cb && typeof cb === 'function' ) {
+                    cb.apply(null, arguments);
+                }
+            },
+            result;
 
         // exist and not already executing
         if ( task && !task.running ) {
@@ -114,15 +115,17 @@ Runner.prototype.wrap = function ( task ) {
             // is there a callback for task?
             if ( task.length === 0 ) {
                 // start task sync
-                task();
+                result = task();
                 // finish
                 done();
             } else {
                 //console.log(task.id);
                 // start task async
-                task(done);
+                result = task(done);
             }
         }
+
+        return result;
     };
 };
 
@@ -134,16 +137,13 @@ Runner.prototype.parallel = function () {
 
     // get actual task functions instead of names
     tasks = tasks.map(function ( task ) {
-        return self.wrap(self.tasks[task] || task);
+        return function ( done ) {
+            return self.run(task, done);
+        };
     });
 
     func = function ( done ) {
-        parallel(/*tasks.map(function ( task ) {
-            return self.wrap(task);
-        })*/tasks, function () {
-            //console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-            done();
-        });
+        parallel(tasks, done);
     };
 
     func.group = true;
@@ -177,7 +177,7 @@ Runner.prototype.serial = function () {
  * @param {function} [done] callback on task finish
  */
 Runner.prototype.run = function ( task, done ) {
-    this.wrap(this.tasks[task] || task)(done);
+    return this.wrap(this.tasks[task] || task)(done);
 
     //var self = this,
     //    taskId, taskFn,
