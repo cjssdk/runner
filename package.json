@@ -13,7 +13,7 @@
         "jsdoc": "jsdoc --destination doc *.js readme.md"
     },
     "dependencies": {
-        "cjs-async": "1.*.*",
+        "cjs-async": "cjssdk/async",
         "cjs-emitter": "1.*.*"
     },
     "keywords": [
