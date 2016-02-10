@@ -330,7 +330,20 @@ describe('main', function () {
                     't0',
                     't1',
                     't2',
-                    't3'
+                    't3',
+                    function () {
+                        counter++;
+                    },
+                    function ( done ) {
+                        counter++;
+                        done();
+                    },
+                    function ( done ) {
+                        setTimeout(function () {
+                            counter++;
+                            done();
+                        }, 10);
+                    }
                 )
             ),
             function () {
@@ -340,11 +353,11 @@ describe('main', function () {
         );
 
         setTimeout(function () {
-            counter.should.equal(2);
+            counter.should.equal(4);
         }, 5);
 
         setTimeout(function () {
-            counter.should.equal(4);
+            counter.should.equal(7);
             done();
         }, 50);
     });
