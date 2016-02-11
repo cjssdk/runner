@@ -297,7 +297,7 @@ describe('main', function () {
     });
 
 
-    it.only('should pass: add some parallel tasks', function ( done ) {
+    it('should pass: add some parallel tasks', function ( done ) {
         var runner  = new Runner(),
             counter = 0;
 

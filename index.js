@@ -82,7 +82,7 @@ Runner.prototype.wrap = function ( task ) {
                 task.running = false;
 
                 time = +new Date() - time;
-                console.log('finish', task.id, time);
+                /*console.log('finish', task.id, time);/**/
 
                 // there are some listeners
                 if ( self.events['finish'] ) {
@@ -103,8 +103,7 @@ Runner.prototype.wrap = function ( task ) {
             task.running = true;
 
             time = +new Date();
-            console.log('start', task.id);
-            //console.log(task);
+            /*console.log('start', task.id);/**/
 
             // there are some listeners
             if ( self.events['start'] ) {
@@ -135,19 +134,27 @@ Runner.prototype.parallel = function () {
         tasks = Array.prototype.slice.call(arguments),
         func;
 
-    // get actual task functions instead of names
-    tasks = tasks.map(function ( task ) {
-        return function ( done ) {
-            return self.run(task, done);
-        };
-    });
-
     func = function ( done ) {
-        parallel(tasks, done);
+        var readyTasks = [];
+
+        // wrap not running tasks only
+        tasks.forEach(function ( task ) {
+            task = self.tasks[task] || task;
+
+            if ( task && !task.running ) {
+                readyTasks.push(
+                    function ( done ) {
+                        return self.run(task, done);
+                    }
+                );
+            }
+        });
+
+        parallel(readyTasks, done);
     };
 
-    func.group = true;
-    func.type = 'parallel';
+    func.group    = true;
+    func.type     = 'parallel';
     func.children = tasks;
 
     return func;
@@ -177,7 +184,13 @@ Runner.prototype.serial = function () {
  * @param {function} [done] callback on task finish
  */
 Runner.prototype.run = function ( task, done ) {
-    return this.wrap(this.tasks[task] || task)(done);
+    var result;
+
+    if ( !task.running ) {
+        result = this.wrap(this.tasks[task] || task)(done);
+    }
+
+    return result;
 
     //var self = this,
     //    taskId, taskFn,
