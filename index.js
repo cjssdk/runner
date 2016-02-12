@@ -186,8 +186,10 @@ Runner.prototype.serial = function () {
 Runner.prototype.run = function ( task, done ) {
     var result;
 
+    task = this.tasks[task] || task;
+
     if ( !task.running ) {
-        result = this.wrap(this.tasks[task] || task)(done);
+        result = this.wrap(task)(done);
     }
 
     return result;
