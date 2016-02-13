@@ -134,6 +134,10 @@ Runner.prototype.parallel = function () {
         tasks = Array.prototype.slice.call(arguments),
         func;
 
+    if ( tasks.length === 0 ) {
+        return null;
+    }
+
     func = function ( done ) {
         var readyTasks = [];
 
@@ -163,19 +167,37 @@ Runner.prototype.parallel = function () {
 
 Runner.prototype.serial = function () {
     var self  = this,
-        tasks = Array.prototype.slice.call(arguments);
+        tasks = Array.prototype.slice.call(arguments),
+        func;
 
-    tasks = tasks.map(function ( item ) {
-        item = typeof item === 'string' ? self.tasks[item] : item;
+    if ( tasks.length === 0 ) {
+        return null;
+    }
 
-        return function () {
+    func = function ( done ) {
+        var readyTasks = [];
 
-        };
-    });
+        // wrap not running tasks only
+        tasks.forEach(function ( task ) {
+            task = self.tasks[task] || task;
 
-    return function ( done ) {
-        serial(tasks, done);
+            if ( task && !task.running ) {
+                readyTasks.push(
+                    function ( done ) {
+                        return self.run(task, done);
+                    }
+                );
+            }
+        });
+
+        serial(readyTasks, done);
     };
+
+    func.group    = true;
+    func.type     = 'serial';
+    func.children = tasks;
+
+    return func;
 };
 
 
@@ -188,63 +210,16 @@ Runner.prototype.run = function ( task, done ) {
 
     task = this.tasks[task] || task;
 
-    if ( !task.running ) {
+    if ( typeof task === 'function' && !task.running ) {
         result = this.wrap(task)(done);
     }
 
     return result;
-
-    //var self = this,
-    //    taskId, taskFn,
-    //    done = function () {
-    //        // mark finished
-    //        taskFn.running = false;
-	//
-    //        // there are some listeners
-    //        if ( self.events['finish'] ) {
-    //            // notify listeners
-    //            self.emit('finish', {id: taskId});
-    //            console.log('finish', taskId);
-    //        }
-    //    };
-	//
-    //// normalize
-    //if ( typeof task === 'string' ) {
-    //    taskId = task;
-    //    taskFn = self.tasks[taskId];
-    //} else {
-    //    taskId = task.id || 'noname';
-    //    taskFn = task;
-    //}
-	//
-    //// exist and not already executing
-    //if ( taskFn && !taskFn.running ) {
-    //    // mark to prevent multiple starts
-    //    taskFn.running = true;
-	//
-    //    // there are some listeners
-    //    if ( this.events['start'] ) {
-    //        // notify listeners
-    //        this.emit('start', {id: taskId});
-    //        console.log('start', taskId);
-    //    }
-	//
-    //    // is there a callback for task?
-    //    if ( taskFn.length === 0 ) {
-    //        // start task sync
-    //        taskFn();
-    //        // finish
-    //        done();
-    //    } else {
-    //        // start task async
-    //        taskFn(done);
-    //    }
-    //}
 };
 
 
-Runner.prototype.start = function () {
-    this.run(this.tasks.default);
+Runner.prototype.start = function ( done ) {
+    this.run(this.tasks.default, done);
 };
 
 
