@@ -34,6 +34,11 @@ Runner.prototype.constructor = Runner;
 /**
  * Remove all attributes from the model.
  *
+ * @param {string} id task name
+ * @param {function} body task method
+ *
+ * @return {function} task
+ *
  * @fires Runner#clear
  */
 Runner.prototype.task = function ( id, body ) {
@@ -202,8 +207,12 @@ Runner.prototype.serial = function () {
 
 
 /**
+ * Start task execution.
+ *
  * @param {function|string} task task to run
  * @param {function} [done] callback on task finish
+ *
+ * @return {*} task execution result
  */
 Runner.prototype.run = function ( task, done ) {
     var result;

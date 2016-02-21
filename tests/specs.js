@@ -8,8 +8,6 @@
 'use strict';
 
 /* eslint-env mocha */
-/* eslint-disable no-useless-call */
-
 
 var should = require('should'),
     Runner = require('../index');
@@ -39,7 +37,7 @@ describe('main', function () {
     it('should pass: add simple task', function () {
         var runner = new Runner();
 
-        runner.task('one', function () {});
+        runner.task('one', function () { return true; });
 
         Object.keys(runner.tasks).should.have.length(1);
         runner.tasks.one.should.have.type('function');
