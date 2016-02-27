@@ -14,7 +14,7 @@
     },
     "dependencies": {
         "cjs-async": "cjssdk/async",
-        "cjs-emitter": "1.*.*"
+        "cjs-emitter": "cjssdk/emitter"
     },
     "keywords": [
         "commonjs",
