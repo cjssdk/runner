@@ -16,6 +16,9 @@
         "cjs-async": "cjssdk/async",
         "cjs-emitter": "cjssdk/emitter"
     },
+    "devDependencies": {
+        "cjs-eslint-config": "cjssdk/eslint-config"
+    },
     "keywords": [
         "commonjs",
         "sdk",
