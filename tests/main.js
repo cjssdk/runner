@@ -16,7 +16,7 @@ var Mocha = require('mocha'),
     });
 
 
-global.DEBUG = true;
+global.DEVELOP = true;
 
 // add specs
 mocha.addFile('./tests/specs');
