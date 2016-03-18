@@ -17,6 +17,8 @@ var Emitter  = require('cjs-emitter'),
  * @extends Emitter
  */
 function Runner () {
+    console.assert(typeof this === 'object', 'must be constructed via new');
+    
     // parent constructor call
     Emitter.call(this);
 
