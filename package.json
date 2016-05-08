@@ -6,7 +6,10 @@
         "name": "Stanislav Kalashnik",
         "email": "darkpark.main@gmail.com"
     },
-    "repository": "cjssdk/runner",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/cjssdk/runner.git"
+    },
     "scripts": {
         "lint": "eslint ./*.js",
         "test": "node ./tests/main.js",
