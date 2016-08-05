@@ -18,7 +18,7 @@ var Emitter  = require('cjs-emitter'),
  */
 function Runner () {
     console.assert(typeof this === 'object', 'must be constructed via new');
-    
+
     // parent constructor call
     Emitter.call(this);
 
@@ -88,7 +88,7 @@ Runner.prototype.wrap = function ( task ) {
                 // mark finished
                 task.running = false;
 
-                time = +new Date() - time;
+                time = Date.now() - time;
                 /*console.log('finish', task.id, time);/**/
 
                 // there are some listeners
@@ -109,7 +109,7 @@ Runner.prototype.wrap = function ( task ) {
             // mark to prevent multiple starts
             task.running = true;
 
-            time = +new Date();
+            time = Date.now();
             /*console.log('start', task.id);/**/
 
             // there are some listeners
