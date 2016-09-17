@@ -52,6 +52,7 @@ describe('main', function () {
 
         runner.task('one', function () {
             counter++;
+
             return true;
         });
 
