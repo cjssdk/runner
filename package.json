@@ -22,7 +22,7 @@
     },
     "devDependencies": {
         "cjs-eslint-config": "cjssdk/eslint-config",
-        "eslint": "2.*.*",
+        "eslint": "3.*.*",
         "mocha": "3.*.*",
         "should": "11.*.*"
     },
