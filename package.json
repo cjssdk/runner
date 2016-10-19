@@ -18,7 +18,7 @@
     },
     "dependencies": {
         "cjs-async": "1.*.*",
-        "cjs-emitter": "cjssdk/emitter"
+        "cjs-emitter": "1.*.*"
     },
     "devDependencies": {
         "cjs-eslint-config": "1.*.*",
