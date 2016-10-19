@@ -17,7 +17,7 @@
         "jsdoc": "jsdoc --destination doc *.js readme.md"
     },
     "dependencies": {
-        "cjs-async": "cjssdk/async",
+        "cjs-async": "1.*.*",
         "cjs-emitter": "cjssdk/emitter"
     },
     "devDependencies": {
