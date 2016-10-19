@@ -21,7 +21,7 @@
         "cjs-emitter": "cjssdk/emitter"
     },
     "devDependencies": {
-        "cjs-eslint-config": "cjssdk/eslint-config",
+        "cjs-eslint-config": "1.*.*",
         "eslint": "3.*.*",
         "mocha": "3.*.*",
         "should": "11.*.*"
