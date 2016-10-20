@@ -1,7 +1,7 @@
 {
     "name": "cjs-runner",
-    "version": "1.0.0",
-    "description": "Task runner.",
+    "version": "1.1.0",
+    "description": "Simple task runner.",
     "author": {
         "name": "Stanislav Kalashnik",
         "email": "darkpark.main@gmail.com"
