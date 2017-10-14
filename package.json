@@ -23,8 +23,8 @@
     "devDependencies": {
         "cjs-eslint-config": "1.*.*",
         "eslint": "4.*.*",
-        "mocha": "3.*.*",
-        "should": "11.*.*"
+        "mocha": "4.*.*",
+        "should": "13.*.*"
     },
     "keywords": [
         "commonjs",
