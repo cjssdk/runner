@@ -23,6 +23,7 @@
     "devDependencies": {
         "cjs-eslint-config": "1.*.*",
         "eslint": "4.*.*",
+        "jsdoc": "3.*.*",
         "mocha": "4.*.*",
         "should": "13.*.*"
     },
