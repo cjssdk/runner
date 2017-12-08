@@ -11,10 +11,10 @@
         "url": "https://github.com/cjssdk/runner.git"
     },
     "scripts": {
-        "lint": "eslint .",
+        "lint": "eslint --ignore-pattern '/docs/' .",
         "mocha": "node ./tests/main.js",
         "test": "npm run mocha && npm run lint",
-        "jsdoc": "jsdoc --destination doc *.js readme.md"
+        "jsdoc": "jsdoc --destination docs *.js readme.md"
     },
     "dependencies": {
         "cjs-async": "1.*.*",
@@ -22,9 +22,10 @@
     },
     "devDependencies": {
         "cjs-eslint-config": "1.*.*",
-        "eslint": "3.*.*",
-        "mocha": "3.*.*",
-        "should": "11.*.*"
+        "eslint": "4.*.*",
+        "jsdoc": "3.*.*",
+        "mocha": "4.*.*",
+        "should": "13.*.*"
     },
     "keywords": [
         "commonjs",
