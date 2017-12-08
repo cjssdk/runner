@@ -1,4 +1,5 @@
 /**
+ * @module cjs-runner
  * @license The MIT License (MIT)
  * @copyright Stanislav Kalashnik <darkpark.main@gmail.com>
  */
@@ -24,7 +25,6 @@ function Runner () {
 
     this.tasks = {};
     this.tree  = {};
-    //this.running = {};
 }
 
 
@@ -34,23 +34,25 @@ Runner.prototype.constructor = Runner;
 
 
 /**
- * Remove all attributes from the model.
+ * Create a task with the given identifier.
  *
  * @param {string} id task name
  * @param {function} body task method
  *
  * @return {function} task
  *
- * @fires Runner#clear
+ * //@fires Runner#clear
  */
 Runner.prototype.task = function ( id, body ) {
-    if ( id && typeof id === 'string' && body && typeof body === 'function' ) {
-        this.tasks[id] = body;
-        body.id = id;
-        //console.log(body);
-    }
+    console.assert(arguments.length === 2, 'wrong arguments number');
+    console.assert(typeof id === 'string', 'wrong id type');
+    console.assert(id.length > 0, 'empty id');
+    console.assert(typeof body === 'function', 'body should be a function');
 
-    return body;
+    this.tasks[id] = body;
+    body.id = id;
+
+    //return body;
 };
 
 //function done ( instance, fn ) {
@@ -123,7 +125,7 @@ Runner.prototype.wrap = function ( task ) {
                 // start task sync
                 result = task();
                 // finish
-                done();
+                done(result === false);
             } else {
                 //console.log(task.id);
                 // start task async
@@ -155,7 +157,7 @@ Runner.prototype.parallel = function () {
             if ( task && !task.running ) {
                 readyTasks.push(
                     function ( done ) {
-                        return self.run(task, done);
+                        return self.run(task.id, done);
                     }
                 );
             }
@@ -191,7 +193,7 @@ Runner.prototype.serial = function () {
             if ( task && !task.running ) {
                 readyTasks.push(
                     function ( done ) {
-                        return self.run(task, done);
+                        return self.run(task.id, done);
                     }
                 );
             }
@@ -214,23 +216,46 @@ Runner.prototype.serial = function () {
  * @param {function|string} task task to run
  * @param {function} [done] callback on task finish
  *
- * @return {*} task execution result
+ * @return {boolean} is task really started
  */
 Runner.prototype.run = function ( task, done ) {
-    var result;
+    var started = false,
+        taskFn;
+    //var result;
 
-    task = this.tasks[task] || task;
+    //console.log(task, done);
 
-    if ( typeof task === 'function' && !task.running ) {
-        result = this.wrap(task)(done);
+    console.assert(arguments.length >= 1, 'wrong arguments number');
+    console.assert(typeof task === 'string', 'wrong task type');
+    console.assert(task.length > 0, 'empty task name');
+    console.assert(arguments.length === 1 || typeof done === 'function', 'wrong done type');
+
+    //task = this.tasks[task] || task;
+    taskFn = this.tasks[task];
+
+    //console.assert(typeof task === 'function', 'task method is missing');
+
+    if ( typeof taskFn === 'function' ) {
+        if ( !taskFn.running ) {
+            //result = this.wrap(task)(done);
+            this.wrap(taskFn)(done);
+            started = true;
+        }
+    } else {
+        this.emit('error', {id: task, code: 404});
     }
 
-    return result;
+    //return result;
+    return started;
 };
 
 
 Runner.prototype.start = function ( done ) {
-    this.run(this.tasks.default, done);
+    var args = Array.prototype.slice.call(arguments);
+
+    args.unshift('default');
+
+    this.run.apply(this, args);
 };
 
 

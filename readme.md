@@ -28,23 +28,84 @@ var Runner = require('cjs-runner'),
     runner = new Runner();
 ```
 
-Create a simple task:
+Create a simple sync task:
 
 ```js
-runner.task('make', function () {
+runner.task('lint', function () {
     // some actions
 });
 ```
 
-```js
-t1 = runner.task('static', runner.serial('jade:build', 'sass:build'));
+Create a simple async task:
 
-t1 = runner.task({
-    name: 'static',
-    dependency: ['jade:build', 'sass:build']
+```js
+runner.task('build', function ( done ) {
+    someAsyncCall(function () {
+        // handle call result
+        done();
+    });
+});
+```
+
+Create a task with serial subtasks:
+
+```js
+runner.task('serve', runner.serial('lint', 'build'));
+```
+
+Create a task with parallel subtasks:
+
+```js
+runner.task('build', runner.parallel('jade:build', 'sass:build'));
+```
+
+Execute a task by name:
+
+```js
+runner.run('lint');
+```
+
+Execute a task and handle the result:
+
+```js
+runner.run('lint', function ( error ) {
+    if ( error ) {
+        console.log('the task has failed!');
+    }
+});
+```
+
+Execute task chain:
+
+```js
+// no result check
+runner.start();
+
+// hook on task completion
+runner.start(function () {
+    console.log('finished');
 });
 
-runner.start(['build']);
+// hook on task completion
+runner.start(function ( error ) {
+    if ( error ) {
+        console.log('failed!');
+    }
+});
+```
+
+Hook on task start/stop events:
+
+```js
+runner.addListener('start', function ( event ) {
+    // {id: 'lint'}
+    console.log(event);
+});
+
+runner.addListener('finish', function ( event ) {
+    // {id: 'lint', time: 1}
+    console.log(event);
+});
 ```
 
 
