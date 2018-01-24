@@ -219,10 +219,19 @@ Runner.prototype.serial = function () {
 Runner.prototype.run = function ( task, done ) {
     var result;
 
+    // lookup
     task = this.tasks[task] || task;
 
-    if ( typeof task === 'function' && !task.running ) {
-        result = this.wrap(task)(done);
+    if ( typeof task === 'function' ) {
+        // task was found but
+        // may be executing at the moment
+        if ( !task.running ) {
+            result = this.wrap(task)(done);
+        }
+    } else if ( this.events['error'] ) {
+        // task was not found
+        // so notify listeners
+        this.emit('error', {id: task, code: 404});
     }
 
     return result;
