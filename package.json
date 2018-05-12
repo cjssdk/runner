@@ -1,5 +1,5 @@
 {
-    "name": "cjs-runner",
+    "name": "@cjssdk/runner",
     "version": "1.1.0",
     "description": "Simple task runner.",
     "author": {
@@ -10,6 +10,9 @@
         "type": "git",
         "url": "https://github.com/cjssdk/runner.git"
     },
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "lint": "eslint --ignore-pattern '/docs/' .",
         "mocha": "node ./tests/main.js",
@@ -17,14 +20,14 @@
         "jsdoc": "jsdoc --destination docs *.js readme.md"
     },
     "dependencies": {
-        "cjs-async": "1.*.*",
-        "cjs-emitter": "1.*.*"
+        "@cjssdk/async": "1.*.*",
+        "@cjssdk/emitter": "1.*.*"
     },
     "devDependencies": {
-        "cjs-eslint-config": "1.*.*",
+        "@cjssdk/eslint-config": "1.*.*",
         "eslint": "4.*.*",
         "jsdoc": "3.*.*",
-        "mocha": "4.*.*",
+        "mocha": "5.*.*",
         "should": "13.*.*"
     },
     "keywords": [

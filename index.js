@@ -5,9 +5,9 @@
 
 'use strict';
 
-var Emitter  = require('cjs-emitter'),
-    parallel = require('cjs-async/parallel'),
-    serial   = require('cjs-async/serial');
+var Emitter  = require('@cjssdk/emitter'),
+    parallel = require('@cjssdk/async/parallel'),
+    serial   = require('@cjssdk/async/serial');
 
 
 /**
