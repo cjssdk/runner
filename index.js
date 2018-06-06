@@ -34,14 +34,14 @@ Runner.prototype.constructor = Runner;
 
 
 /**
- * Remove all attributes from the model.
+ * Create a task with the given identifier.
  *
  * @param {string} id task name
  * @param {function} body task method
  *
  * @return {function} task
  *
- * @fires Runner#clear
+ * //@fires Runner#clear
  */
 Runner.prototype.task = function ( id, body ) {
     if ( id && typeof id === 'string' && body && typeof body === 'function' ) {
@@ -52,6 +52,26 @@ Runner.prototype.task = function ( id, body ) {
 
     return body;
 };
+
+
+/**
+ * Create tasks.
+ */
+Runner.prototype.tasks = function () {
+    var index, taskSet, name;
+
+    // walk through all the given task sets
+    for ( index = 0; index < arguments.length; index++ ) {
+        taskSet = arguments[index];
+
+        if ( taskSet && typeof taskSet === 'object' ) {
+            for ( name in taskSet ) {
+                this.task(name, taskSet[name]);
+            }
+        }
+    }
+};
+
 
 //function done ( instance, fn ) {
 //    // mark finished
