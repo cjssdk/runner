@@ -1,6 +1,6 @@
 {
     "name": "@cjssdk/runner",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "description": "Simple task runner.",
     "author": {
         "name": "Stanislav Kalashnik",
