@@ -61,7 +61,7 @@ runner.task('build', runner.parallel('jade:build', 'sass:build'));
 
 Batch tasks creation:
 ```js
-runner.tasks(
+Object.assign(runner.tasks,
     {
         taskName1: taskFunction1,
         taskName2: taskFunction2
