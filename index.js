@@ -158,7 +158,7 @@ Runner.prototype.run = function ( taskId, done ) {
     console.assert(arguments.length >= 1, 'wrong arguments number');
     console.assert(typeof taskId === 'string', 'taskId should be a string');
     console.assert(taskId.length > 0, 'empty taskId');
-    console.assert(arguments.length === 1 || typeof done === 'function', 'done should be a function');
+    console.assert(!done || typeof done === 'function', 'done should be a function');
 
     taskBody = this.tasks[taskId];
 
