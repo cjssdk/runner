@@ -59,6 +59,16 @@ Create a task with parallel subtasks:
 runner.task('build', runner.parallel('jade:build', 'sass:build'));
 ```
 
+It's possible to use either anonymous or named functions as well:
+
+```js
+runner.task('build', runner.parallel('jade:build', 'sass:build', function lessBuild ( done ) {
+    // function name "lessBuild" is used as task name
+    // otherwise <noname> is printed
+    done();
+}));
+```
+
 Batch tasks creation:
 ```js
 Object.assign(runner.tasks,
@@ -87,6 +97,20 @@ runner.run('lint', function ( error ) {
         console.log('the task has failed!');
     }
 });
+```
+
+Execute a task as a named or anonymous function:
+
+```js
+runner.run(function ( done ) {
+    done();
+});
+```
+
+Execute task series:
+
+```js
+runner.run(runner.parallel('lint', 'build'));
 ```
 
 Execute task chain:

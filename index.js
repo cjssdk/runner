@@ -106,63 +106,81 @@ Runner.prototype.task = function ( id, body ) {
 // accepts list of task ids
 Runner.prototype.parallel = function () {
     var self  = this,
-        tasks = Array.prototype.slice.call(arguments);
+        tasks = Array.prototype.slice.call(arguments),
+        task;
 
     // no tasks were given
     if ( tasks.length === 0 ) {
         return null;
     }
 
-    return function ( done ) {
+    task = function ( done ) {
         parallel(tasks.map(function ( taskId ) {
             return function ( done ) {
                 return self.run(taskId, done);
             };
         }), done);
     };
+
+    // apply custom task name
+    Object.defineProperty(task, 'name', {value: '<parallel>'});
+
+    return task;
 };
 
 
 // accepts list of task ids
 Runner.prototype.serial = function () {
     var self  = this,
-        tasks = Array.prototype.slice.call(arguments);
+        tasks = Array.prototype.slice.call(arguments),
+        task;
 
     // no tasks were given
     if ( tasks.length === 0 ) {
         return null;
     }
 
-    return function ( done ) {
+    task = function ( done ) {
         serial(tasks.map(function ( taskId ) {
             return function ( done ) {
                 return self.run(taskId, done);
             };
         }), done);
     };
+
+    // apply custom task name
+    Object.defineProperty(task, 'name', {value: '<serial>'});
+
+    return task;
 };
 
 
 /**
  * Start task execution.
  *
- * @param {function|string} taskId task to run
+ * @param {function|string} task task to run
  * @param {function} [done] callback on task finish
  *
  * @return {boolean} is task really started
  */
-Runner.prototype.run = function ( taskId, done ) {
+Runner.prototype.run = function ( task, done ) {
     var started = false,
-        taskBody;
+        taskId, taskBody;
 
     console.assert(arguments.length >= 1, 'wrong arguments number');
-    console.assert(typeof taskId === 'string', 'taskId should be a string');
-    console.assert(taskId.length > 0, 'empty taskId');
+    console.assert(typeof task === 'string' || typeof task === 'function', 'task should be a string or a function');
+    console.assert(!!task, 'task is empty');
     console.assert(!done || typeof done === 'function', 'done should be a function');
 
-    taskBody = this.tasks[taskId];
+    if ( typeof task === 'string' ) {
+        taskId = task;
+        taskBody = this.tasks[task];
+    } else if ( typeof task === 'function' ) {
+        taskId = task.name || '<noname>';
+        taskBody = task;
+    }
 
-    if ( typeof taskBody === 'function' ) {
+    if ( taskBody ) {
         if ( !taskBody.running ) {
             wrap(this, taskId, taskBody)(done);
 
