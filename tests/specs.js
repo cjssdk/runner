@@ -8,6 +8,7 @@
 'use strict';
 
 /* eslint-env mocha */
+/* eslint-disable max-lines-per-function */
 
 var should = require('should'),
     Runner = require('../index');
@@ -215,10 +216,10 @@ describe('main', function () {
         runner.addListener('start',  handler);
         runner.addListener('finish', handler);
 
-        runner.run(function ( done ) {
+        runner.run(function ( callback ) {
             setTimeout(function () {
                 handler();
-                done();
+                callback();
             }, 5);
         });
 
@@ -304,27 +305,28 @@ describe('main', function () {
             counter++;
         });
 
-        runner.task('t1', function ( done ) {
+        runner.task('t1', function ( callback ) {
             counter++;
-            done();
+            callback();
         });
 
-        runner.task('t2', function ( done ) {
+        runner.task('t2', function ( callback ) {
             setTimeout(function () {
                 counter++;
-                done();
+                callback();
             }, 10);
         });
 
-        runner.task('t3', function ( done ) {
+        runner.task('t3', function ( callback ) {
             setTimeout(function () {
                 counter++;
-                done();
+                callback();
             }, 10);
         });
 
         runner.run(
-            runner.task('all',
+            runner.task(
+                'all',
                 runner.parallel(
                     't0',
                     't1',
@@ -333,14 +335,14 @@ describe('main', function () {
                     function () {
                         counter++;
                     },
-                    function ( done ) {
+                    function ( callback ) {
                         counter++;
-                        done();
+                        callback();
                     },
-                    function ( done ) {
+                    function ( callback ) {
                         setTimeout(function () {
                             counter++;
-                            done();
+                            callback();
                         }, 10);
                     }
                 )

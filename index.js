@@ -116,8 +116,8 @@ Runner.prototype.parallel = function () {
 
     task = function ( done ) {
         parallel(tasks.map(function ( taskId ) {
-            return function ( done ) {
-                return self.run(taskId, done);
+            return function ( callback ) {
+                return self.run(taskId, callback);
             };
         }), done);
     };
@@ -142,8 +142,8 @@ Runner.prototype.serial = function () {
 
     task = function ( done ) {
         serial(tasks.map(function ( taskId ) {
-            return function ( done ) {
-                return self.run(taskId, done);
+            return function ( callback ) {
+                return self.run(taskId, callback);
             };
         }), done);
     };
