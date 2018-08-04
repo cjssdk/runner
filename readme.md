@@ -2,11 +2,11 @@ Task runner
 ===========
 
 [![build status](https://img.shields.io/travis/cjssdk/runner.svg?style=flat-square)](https://travis-ci.org/cjssdk/runner)
-[![npm version](https://img.shields.io/npm/v/@cjssdk/runner.svg?style=flat-square)](https://www.npmjs.com/package/@cjssdk/runner)
+[![npm version](https://img.shields.io/npm/v/cjs-runner.svg?style=flat-square)](https://www.npmjs.com/package/cjs-runner)
 [![dependencies status](https://img.shields.io/david/cjssdk/runner.svg?style=flat-square)](https://david-dm.org/cjssdk/runner)
 [![devDependencies status](https://img.shields.io/david/dev/cjssdk/runner.svg?style=flat-square)](https://david-dm.org/cjssdk/runner?type=dev)
 [![Gitter](https://img.shields.io/badge/gitter-join%20chat-blue.svg?style=flat-square)](https://gitter.im/DarkPark/cjssdk)
-[![RunKit](https://img.shields.io/badge/RunKit-try-yellow.svg?style=flat-square)](https://npm.runkit.com/@cjssdk/runner)
+[![RunKit](https://img.shields.io/badge/RunKit-try-yellow.svg?style=flat-square)](https://npm.runkit.com/cjs-runner)
 
 
 Set of methods to synchronize asynchronous operations.
@@ -15,7 +15,7 @@ Set of methods to synchronize asynchronous operations.
 ## Installation ##
 
 ```bash
-npm install @cjssdk/runner
+npm install cjs-runner
 ```
 
 
@@ -24,7 +24,7 @@ npm install @cjssdk/runner
 Add to the scope:
 
 ```js
-var Runner = require('@cjssdk/runner'),
+var Runner = require('cjs-runner'),
     runner = new Runner();
 ```
 
@@ -155,4 +155,4 @@ according to the contribution [rules](.github/contributing.md).
 
 ## License ##
 
-`@cjssdk/runner` is released under the [MIT License](license.md).
+`cjs-runner` is released under the [MIT License](license.md).
