@@ -1,13 +1,13 @@
 /**
  * @license The MIT License (MIT)
- * @copyright Stanislav Kalashnik <darkpark.main@gmail.com>
+ * @author Stanislav Kalashnik <darkpark.main@gmail.com>
  */
 
 'use strict';
 
-var Emitter  = require('@cjssdk/emitter'),
-    parallel = require('@cjssdk/async/parallel'),
-    serial   = require('@cjssdk/async/serial');
+var Emitter  = require('cjs-emitter'),
+    parallel = require('cjs-async/parallel'),
+    serial   = require('cjs-async/serial');
 
 
 function wrap ( instance, taskId, taskBody ) {
