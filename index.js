@@ -5,7 +5,8 @@
 
 'use strict';
 
-var Emitter  = require('cjs-emitter'),
+const
+    Emitter  = require('cjs-emitter'),
     parallel = require('cjs-async/parallel'),
     serial   = require('cjs-async/serial');
 
@@ -63,7 +64,7 @@ function wrap ( instance, taskId, taskBody ) {
 
 
 /**
- * @constructor
+ * @class
  * @extends Emitter
  */
 function Runner () {
@@ -84,8 +85,8 @@ Runner.prototype.constructor = Runner;
 /**
  * Create a task with the given identifier.
  *
- * @param {string} id task unique name
- * @param {function} body task method
+ * @param {string} id - task unique name
+ * @param {function} body - task method
  *
  * @return {function} task
  *
@@ -158,8 +159,8 @@ Runner.prototype.serial = function () {
 /**
  * Start task execution.
  *
- * @param {function|string} task task to run
- * @param {function} [done] callback on task finish
+ * @param {function|string} task - task to run
+ * @param {function} [done] callback - on task finish
  *
  * @return {boolean} is task really started
  */
